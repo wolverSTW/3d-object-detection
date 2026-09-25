@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+.idea/
+.vscode/
+data/KITTI/
+outputs/
+*.pth
+*.pt
+*.onnx
+.DS_Store

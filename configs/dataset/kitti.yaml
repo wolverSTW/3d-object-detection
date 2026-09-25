@@ -1,0 +1,14 @@
+dataset:
+  name: "KITTI"
+  root_dir: "data/KITTI"
+  download_url: "https://s3.eu-central-1.amazonaws.com/avg-kitti"
+  classes: ["Car", "Pedestrian", "Cyclist"]
+  
+  split:
+    train_ratio: 0.8
+    val_ratio: 0.2
+    seed: 42
+
+  img_size: [375, 1242]
+  mean: [0.485, 0.456, 0.406]
+  std: [0.229, 0.224, 0.225]
