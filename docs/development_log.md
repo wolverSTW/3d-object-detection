@@ -16,3 +16,4 @@
 - Implemented , , and unit tests.
 - Passed loss module unit tests in .
 - Passed loss module unit tests in .
+- Implemented training engine, evaluator, and full pipeline unit tests in .
