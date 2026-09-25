@@ -26,7 +26,8 @@ class KITTICalibration:
 class KITTILabel:
     """
     Parses single object annotation in KITTI label format.
-    Format: type, truncated, occluded, alpha, bbox2d, dimensions (h,w,l), location (x,y,z), rotation_y
+    Format: type, truncated, occluded, alpha, bbox2d (4), dimensions (3), location (3), rotation_y (1)
+    Total tokens: 15
     """
     def __init__(self, line):
         parts = line.strip().split(' ')
@@ -35,17 +36,17 @@ class KITTILabel:
         self.occluded = int(parts[2])
         self.alpha = float(parts[3])
         
-        # 2D Bounding Box [xmin, ymin, xmax, ymax]
+        # 2D Bounding Box [xmin, ymin, xmax, ymax] -> parts[4:8]
         self.bbox2d = np.array([float(x) for x in parts[4:8]])
         
-        # 3D Object Dimensions [height, width, length] in meters
+        # 3D Object Dimensions [height, width, length] in meters -> parts[8:11]
         self.dimensions = np.array([float(x) for x in parts[8:11]])
         
-        # 3D Object Location [x, y, z] in camera coordinates (meters)
+        # 3D Object Location [x, y, z] in camera coordinates (meters) -> parts[11:14]
         self.location = np.array([float(x) for x in parts[11:14]])
         
-        # Rotation around Y-axis [-pi, pi]
-        self.rotation_y = float(parts[15]) if len(parts) > 14 else float(parts[14])
+        # Rotation around Y-axis [-pi, pi] -> parts[14]
+        self.rotation_y = float(parts[14])
         
         # Calculate metric Euclidean distance from camera origin (0,0,0) to object center (x,y,z)
         self.distance = np.sqrt(np.sum(self.location ** 2))
