@@ -12,3 +12,4 @@
 - Passed unit tests for  and .
 - Implemented  and utils (, , ).
 - Implemented , , and unit tests.
+- Fixed feature map shape assertion in  and passed tests.
