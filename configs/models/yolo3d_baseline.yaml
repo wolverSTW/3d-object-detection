@@ -1,0 +1,21 @@
+model:
+  name: "YOLOv10_3D_Baseline"
+  num_classes: 3
+  
+  backbone:
+    type: "yolov10_nano" # Lightweight Backbone selection
+    pretrained: True
+    out_channels: [64, 128, 256]
+
+  neck:
+    type: "PANet"
+    in_channels: [64, 128, 256]
+
+  head:
+    type: "YOLO3DPredictionHead"
+    reg_heads:
+      bbox2d: 4        # [x1, y1, x2, y2]
+      dimensions: 3    # [h, w, l]
+      location: 3      # [x, y, z]
+      orientation: 1   # [rot_y]
+      distance: 1      # [metric_distance]
