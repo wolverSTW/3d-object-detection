@@ -1,0 +1,24 @@
+model:
+  name: yolo3d_geometry_guided
+  backbone:
+    type: yolov10
+    depth_multiple: 1.0
+    width_multiple: 1.0
+  neck:
+    type: geometry_fpn
+    out_channels: [256, 512, 512]
+  head:
+    type: 3d_detection
+    num_classes: 3
+    reg_dims: 7
+  geometry:
+    enabled: true
+    guidance_type: camera_geometry
+    feature_fusion: concat
+    use_depth_prior: true
+    use_projection_consistency: true
+  loss:
+    lambda_box: 1.0
+    lambda_cls: 0.5
+    lambda_3d: 1.5
+    lambda_geo: 0.8

@@ -1,0 +1,23 @@
+defaults:
+  - dataset: kitti
+  - model: yolo3d_geometry
+
+training:
+  epochs: 100
+  batch_size: 8
+  learning_rate: 0.001
+  optimizer: adamw
+  scheduler: cosine
+  seed: 42
+
+loss:
+  distance_weight: 1.2
+  dimension_weight: 0.8
+  orientation_weight: 0.5
+
+output:
+  experiment_name: distance
+  save_dir: experiments/distance
+  checkpoint_dir: experiments/distance/checkpoints
+  log_dir: experiments/distance/logs
+  metrics_dir: experiments/distance/metrics

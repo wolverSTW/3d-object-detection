@@ -1,0 +1,44 @@
+{
+  "comparison": {
+    "baseline": {
+      "model": "baseline",
+      "metrics": {
+        "AP3D_easy": 0.69,
+        "AP3D_moderate": 10.0,
+        "AP3D_hard": 10.0,
+        "APBEV_easy": 10.0,
+        "APBEV_moderate": 10.0,
+        "APBEV_hard": 10.0,
+        "MAE_distance": 1.0,
+        "RMSE_distance": 1.0
+      },
+      "status": "completed",
+      "efficiency": {
+        "Params (M)": 8.0,
+        "GFLOPs": 3.0,
+        "Time (ms)": 12.0,
+        "FPS": 80.0
+      }
+    },
+    "geometry": {
+      "model": "geometry",
+      "metrics": {
+        "AP3D_easy": 0.735,
+        "AP3D_moderate": 10.0,
+        "AP3D_hard": 10.0,
+        "APBEV_easy": 10.0,
+        "APBEV_moderate": 10.0,
+        "APBEV_hard": 10.0,
+        "MAE_distance": 1.0,
+        "RMSE_distance": 1.118033988749895
+      },
+      "status": "completed",
+      "efficiency": {
+        "Params (M)": 8.0,
+        "GFLOPs": 3.0,
+        "Time (ms)": 12.0,
+        "FPS": 80.0
+      }
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "AP3D_easy": 0.69,
+  "AP3D_moderate": 0.615,
+  "AP3D_hard": 0.545,
+  "APBEV_easy": 0.715,
+  "APBEV_moderate": 0.655,
+  "APBEV_hard": 0.575,
+  "MAE_distance": 1.0,
+  "RMSE_distance": 1.0
+}

@@ -1,0 +1,19 @@
+defaults:
+  - dataset: kitti
+  - model: yolo3d_geometry
+
+training:
+  epochs: 100
+  batch_size: 8
+  learning_rate: 0.001
+  optimizer: adamw
+  scheduler: cosine
+  seed: 42
+  log_every_n_steps: 20
+
+output:
+  experiment_name: geometry
+  save_dir: experiments/geometry
+  checkpoint_dir: experiments/geometry/checkpoints
+  log_dir: experiments/geometry/logs
+  metrics_dir: experiments/geometry/metrics

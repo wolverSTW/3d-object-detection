@@ -1,0 +1,19 @@
+model:
+  name: yolo3d_baseline
+  backbone:
+    type: yolov10
+    depth_multiple: 1.0
+    width_multiple: 1.0
+  neck:
+    type: fpn
+    out_channels: [256, 512, 512]
+  head:
+    type: 3d_detection
+    num_classes: 3
+    anchors: null
+    reg_dims: 7
+  loss:
+    lambda_box: 1.0
+    lambda_cls: 0.5
+    lambda_3d: 1.5
+    lambda_geo: 0.0

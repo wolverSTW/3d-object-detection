@@ -1,0 +1,23 @@
+dataset:
+  name: KITTI
+  root_dir: data/KITTI
+  image_dir: raw/image_2
+  label_dir: raw/label_2
+  calib_dir: raw/calib
+  split_dir: raw/splits
+  train_split: train.txt
+  val_split: val.txt
+  test_split: test.txt
+
+  classes:
+    - Car
+    - Pedestrian
+    - Cyclist
+
+  input_size: [1280, 384]
+  max_objects_per_image: 50
+  augment:
+    flip: false
+    color_jitter: false
+    resize: true
+    normalize: true

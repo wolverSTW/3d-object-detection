@@ -1,0 +1,26 @@
+defaults:
+  - dataset: kitti
+  - model: yolo3d_geometry
+
+training:
+  epochs: 80
+  batch_size: 8
+  learning_rate: 0.001
+  optimizer: adamw
+  scheduler: cosine
+  seed: 42
+
+ablation:
+  enabled: true
+  variants:
+    - baseline
+    - geometry_only
+    - geometry_plus_csamm
+    - full_model
+
+output:
+  experiment_name: ablation
+  save_dir: experiments/ablation
+  checkpoint_dir: experiments/ablation/checkpoints
+  log_dir: experiments/ablation/logs
+  metrics_dir: experiments/ablation/metrics
