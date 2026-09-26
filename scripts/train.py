@@ -6,6 +6,7 @@ training loop for local validation and experimentation.
 """
 
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -13,6 +14,7 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from src.data.dataset import KittiDataset
 from src.models.baseline import YOLO3DBaseline
 from src.models.proposed import YOLO3DGeometryGuided
 from src.training.trainer import Trainer
@@ -24,7 +26,17 @@ def parse_args():
     parser.add_argument('--config', type=str, default='configs/experiments/baseline.yaml')
     parser.add_argument('--model', type=str, default='baseline', choices=['baseline', 'geometry'])
     parser.add_argument('--epochs', type=int, default=1)
+    parser.add_argument('--data-dir', type=str, default='data/KITTI/raw', help='KITTI raw dataset directory.')
+    parser.add_argument('--split', type=str, default='train.txt', help='Training split file name.')
+    parser.add_argument('--limit', type=int, default=None, help='Optional limit for the number of training items.')
     return parser.parse_args()
+
+
+def build_dataloader(data_dir: str, split_file: str = 'train.txt', limit: int = None):
+    dataset = KittiDataset(data_dir=data_dir, split_file=split_file)
+    if limit is not None:
+        dataset.samples = dataset.samples[:limit]
+    return dataset.samples
 
 
 def build_model(model_name: str):
@@ -41,19 +53,14 @@ def main():
     save_dir = config.get('output', {}).get('save_dir', 'experiments/default')
     trainer = Trainer(model=model, optimizer=None, criterion=None, save_dir=save_dir)
 
-    sample_loader = [{
-        'image': None,
-        'annotations': [{
-            'location_3d': [10.0, 0.0, 5.0],
-            'bbox_2d': [10.0, 20.0, 100.0, 200.0],
-            'dimensions_3d': [1.5, 1.6, 3.8],
-        }],
-        'calib': {}
-    } for _ in range(2)]
+    dataloader = build_dataloader(args.data_dir, args.split, args.limit)
+    if not dataloader:
+        raise FileNotFoundError(f'No training samples found in {args.data_dir} with split {args.split}.')
 
     print(f'Running {args.model} training for {args.epochs} epoch(s)')
+    print(f'Using KITTI dataset from {args.data_dir} with {len(dataloader)} samples')
     for epoch in range(args.epochs):
-        epoch_loss = trainer.train_epoch(sample_loader)
+        epoch_loss = trainer.train_epoch(dataloader)
         print(f'Epoch {epoch + 1}: loss={epoch_loss:.4f}')
         trainer.save_checkpoint(epoch + 1)
 

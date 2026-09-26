@@ -168,13 +168,15 @@ python tools/download/create_mock_kitti.py
 
 If you are using the full KITTI dataset, place it under `data/KITTI/raw/` and keep the expected folder structure from the project.
 
-7. Start a long-running training session in the background with `tmux`:
+7. Start a long-running training session in the background with `tmux` using the included launcher:
 
 ```bash
+chmod +x tools/run_vastai_kitti_train.sh
+
 tmux new -s thesis-train
 source .venv/bin/activate
 cd /workspace/3d-object-detection
-python scripts/train.py --config configs/experiments/baseline.yaml --model baseline --epochs 1
+MODEL=baseline EPOCHS=50 DATA_DIR=data/KITTI/raw SPLIT=train.txt ./tools/run_vastai_kitti_train.sh
 ```
 
 To detach from the session:
@@ -187,6 +189,17 @@ To reconnect later:
 
 ```bash
 tmux attach -t thesis-train
+```
+
+You can also run the training script directly without the wrapper:
+
+```bash
+python scripts/train.py \
+  --config configs/experiments/baseline.yaml \
+  --model baseline \
+  --data-dir data/KITTI/raw \
+  --split train.txt \
+  --epochs 50
 ```
 
 8. Run the comparison workflow after training:
