@@ -1,6 +1,13 @@
 # Lightweight YOLOv10-Based Geometry-Guided Framework for Monocular 3D Object Detection and Distance Estimation
 
-This repository provides the project scaffold for a master’s thesis focused on monocular 3D object detection and distance estimation on the KITTI dataset. It follows the overall workflow shown in the thesis proposal: dataset audit, preprocessing, baseline training, geometry-guided model development, evaluation, ablation studies, and efficiency analysis.
+This repository provides a thesis-ready research project for monocular 3D object detection and distance estimation on the KITTI dataset. It follows a practical workflow from dataset audit and preprocessing to baseline training, geometry-guided model experiments, evaluation, and efficiency analysis.
+
+## Project Snapshot
+
+- Research focus: monocular 3D object detection and depth/distance estimation
+- Dataset: KITTI benchmark data with lightweight mock-data support for local validation
+- Method: YOLOv10-inspired baseline with geometry-guided refinement modules
+- Outputs: training pipeline, evaluation metrics, ablation comparison reports, and experiment summaries
 
 ## Project Goals
 
