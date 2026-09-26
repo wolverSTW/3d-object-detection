@@ -136,7 +136,12 @@ source .venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 chmod +x tools/run_vastai_kitti_train.sh
+
+# Baseline model
 MODEL=baseline EPOCHS=50 DATA_DIR=data/KITTI/raw SPLIT=train.txt ./tools/run_vastai_kitti_train.sh
+
+# Proposed geometry-guided model
+MODEL=geometry EPOCHS=50 DATA_DIR=data/KITTI/raw SPLIT=train.txt ./tools/run_vastai_kitti_train.sh
 ```
 
 ### Required dataset layout
@@ -203,7 +208,12 @@ chmod +x tools/run_vastai_kitti_train.sh
 tmux new -s thesis-train
 source .venv/bin/activate
 cd /workspace/3d-object-detection
+
+# Baseline model:
 MODEL=baseline EPOCHS=50 DATA_DIR=data/KITTI/raw SPLIT=train.txt ./tools/run_vastai_kitti_train.sh
+
+# Proposed model:
+MODEL=geometry EPOCHS=50 DATA_DIR=data/KITTI/raw SPLIT=train.txt ./tools/run_vastai_kitti_train.sh
 ```
 
 To detach from the session:
@@ -229,7 +239,18 @@ python scripts/train.py \
   --epochs 50
 ```
 
-7. Run the comparison workflow after training:
+7. Inspect the training outputs after the run:
+
+```bash
+ls -R experiments
+ls -R experiments/logs
+
+tail -f experiments/logs/baseline_kitti_train.log
+# or
+# tail -f experiments/logs/geometry_kitti_train.log
+```
+
+8. Run the comparison workflow after training:
 
 ```bash
 python scripts/run_experiments.py --output-dir experiments/final_compare
