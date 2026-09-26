@@ -15,7 +15,12 @@ mkdir -p "$LOG_DIR" "$OUTPUT_DIR"
 if [ ! -d "$DATA_DIR/image_2" ] || [ ! -d "$DATA_DIR/label_2" ] || [ ! -d "$DATA_DIR/calib" ]; then
   echo "KITTI dataset not found at $DATA_DIR"
   echo "Expected directories: $DATA_DIR/image_2, $DATA_DIR/label_2, and $DATA_DIR/calib"
-  echo "You can generate mock data locally with: python tools/download/create_mock_kitti.py"
+  echo "This is the real issue. The tmux warning about nested sessions is only a warning and does not block the run."
+  echo "To fix this on the server, upload or unzip the full KITTI dataset into data/KITTI/raw/ before starting training."
+  echo "Example:"
+  echo "  mkdir -p data/KITTI/splits"
+  echo "  ls data/KITTI/raw/image_2 | sed 's/\.png$//' > data/KITTI/splits/train.txt"
+  echo "For a mock validation-only run, use: python tools/download/create_mock_kitti.py"
   exit 1
 fi
 

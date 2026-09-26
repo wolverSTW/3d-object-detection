@@ -159,6 +159,15 @@ data/KITTI/
 │   └── train.txt
 ```
 
+If you see the message `KITTI dataset not found at data/KITTI/raw`, the real issue is that the full KITTI directory is not present on the GPU server yet. Upload or unzip the official KITTI dataset into `data/KITTI/raw/` and create the split file before running training.
+
+Example:
+
+```bash
+mkdir -p data/KITTI/splits
+ls data/KITTI/raw/image_2 | sed 's/\.png$//' > data/KITTI/splits/train.txt
+```
+
 If you are only validating locally, you can generate mock data with:
 
 ```bash
