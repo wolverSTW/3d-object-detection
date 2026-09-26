@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+
+# Datasets & Heavy Outputs (Do NOT push to Git)
+data/KITTI/raw/*.zip
+data/KITTI/raw/image_2/
+data/KITTI/raw/velodyne/
+experiments/*/checkpoints/
+experiments/*/logs/
+outputs/
+
+# IDE & System
+.vscode/
+.idea/
+.DS_Store
