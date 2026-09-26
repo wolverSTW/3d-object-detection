@@ -125,7 +125,42 @@ The project is designed around the KITTI dataset workflow:
 
 ## Running on a vast.ai GPU Server
 
-These are the steps typically used to run this project on a rented GPU instance from vast.ai.
+### Quick Start
+
+```bash
+ssh root@<INSTANCE_IP>
+git clone <your-repo-url> /workspace/3d-object-detection
+cd /workspace/3d-object-detection
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+chmod +x tools/run_vastai_kitti_train.sh
+MODEL=baseline EPOCHS=50 DATA_DIR=data/KITTI/raw SPLIT=train.txt ./tools/run_vastai_kitti_train.sh
+```
+
+### Required dataset layout
+
+The project expects the following structure before training begins:
+
+```text
+data/KITTI/
+├── raw/
+│   ├── image_2/
+│   ├── label_2/
+│   ├── calib/
+│   └── ...
+├── splits/
+│   └── train.txt
+```
+
+If you are only validating locally, you can generate mock data with:
+
+```bash
+python tools/download/create_mock_kitti.py
+```
+
+### Detailed setup steps
 
 1. Launch a GPU instance on vast.ai.
    - Choose a Linux image with Python and CUDA support.
@@ -160,15 +195,7 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-6. Create or sync the dataset:
-
-```bash
-python tools/download/create_mock_kitti.py
-```
-
-If you are using the full KITTI dataset, place it under `data/KITTI/raw/` and keep the expected folder structure from the project.
-
-7. Start a long-running training session in the background with `tmux` using the included launcher:
+6. Start a long-running training session in the background with `tmux` using the included launcher:
 
 ```bash
 chmod +x tools/run_vastai_kitti_train.sh
@@ -202,7 +229,7 @@ python scripts/train.py \
   --epochs 50
 ```
 
-8. Run the comparison workflow after training:
+7. Run the comparison workflow after training:
 
 ```bash
 python scripts/run_experiments.py --output-dir experiments/final_compare
