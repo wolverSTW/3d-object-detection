@@ -29,6 +29,23 @@ class TestTrainingScript(unittest.TestCase):
         self.assertIn('image_path', dataloader[0])
         self.assertTrue(os.path.exists(dataloader[0]['image_path']))
 
+    def test_training_loss_changes_with_image_content(self):
+        from PIL import Image
+
+        from src.models.baseline import YOLO3DBaseline
+        from src.training.trainer import Trainer
+
+        model = YOLO3DBaseline(in_channels=3, num_classes=3, reg_dims=7)
+        trainer = Trainer(model=model, optimizer=None, criterion=None, save_dir='experiments/test_loss_variation')
+
+        dark = Image.new('RGB', (32, 32), color=(10, 20, 30))
+        bright = Image.new('RGB', (64, 64), color=(200, 220, 240))
+
+        loss_dark = trainer._compute_batch_loss({'image': dark, 'annotations': [], 'calib': {}})
+        loss_bright = trainer._compute_batch_loss({'image': bright, 'annotations': [], 'calib': {}})
+
+        self.assertNotAlmostEqual(loss_dark, loss_bright, places=6)
+
 
 if __name__ == '__main__':
     unittest.main()

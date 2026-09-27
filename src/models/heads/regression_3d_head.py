@@ -10,6 +10,8 @@ class Regression3DHead:
             geometry_prior = features.get('geometry_prior', {})
             depth = geometry_prior.get('depth', 0.0)
             projected = geometry_prior.get('projected_2d', (0.0, 0.0))
+            geometry_guidance = features.get('geometry_guidance', {})
+            depth = geometry_guidance.get('depth', depth)
         else:
             depth = 0.0
             projected = (0.0, 0.0)
@@ -18,6 +20,9 @@ class Regression3DHead:
             'box_pred': [0.0, 0.0, 0.0, 0.0],
             'cls_pred': [1.0, 0.0, 0.0],
             'dim_pred': [1.5, 1.6, 3.8],
-            'depth_pred': [depth],
+            'depth_pred': [float(depth)],
+            'location_pred': [0.0, 0.0, float(depth)],
+            'orientation_pred': [0.0],
             'projected_center': projected,
+            'uncertainty_pred': [0.1],
         }
