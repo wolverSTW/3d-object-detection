@@ -92,6 +92,10 @@ def split_ready(data_root: Path) -> bool:
     return split_file.exists() and split_file.stat().st_size > 0
 
 
+def archive_is_valid(path: Path) -> bool:
+    return path.exists() and path.stat().st_size > 0 and zipfile.is_zipfile(path)
+
+
 def download_kitti_dataset(data_root: Path) -> Dict[str, object]:
     raw_root = data_root / "raw"
     raw_root.mkdir(parents=True, exist_ok=True)
@@ -104,9 +108,12 @@ def download_kitti_dataset(data_root: Path) -> Dict[str, object]:
         archive_name = url.rsplit("/", 1)[-1]
         archive_path = raw_root / archive_name
 
-        if archive_path.exists() and archive_path.stat().st_size > 0:
+        if archive_is_valid(archive_path):
             downloaded.append(str(archive_path))
             continue
+
+        if archive_path.exists():
+            archive_path.unlink()
 
         response = requests.get(url, stream=True, timeout=60)
         response.raise_for_status()
@@ -114,6 +121,10 @@ def download_kitti_dataset(data_root: Path) -> Dict[str, object]:
             for chunk in response.iter_content(chunk_size=1024 * 1024):
                 if chunk:
                     handle.write(chunk)
+
+        if not archive_is_valid(archive_path):
+            raise ValueError(f"Downloaded archive is invalid: {archive_path}")
+
         downloaded.append(str(archive_path))
 
     return {"download_required": True, "downloaded": downloaded, "message": "KITTI archives downloaded."}
@@ -125,11 +136,15 @@ def extract_kitti_archives(data_root: Path) -> Dict[str, object]:
     if not archives:
         return {"extracted": 0, "message": "No KITTI archives found to extract."}
 
+    extracted = 0
     for archive in archives:
+        if not archive_is_valid(archive):
+            raise ValueError(f"Skipping invalid KITTI archive: {archive}")
         with zipfile.ZipFile(archive, "r") as zf:
             zf.extractall(raw_root)
+        extracted += 1
 
-    return {"extracted": len(archives), "message": f"Extracted {len(archives)} archive(s)."}
+    return {"extracted": extracted, "message": f"Extracted {extracted} archive(s)."}
 
 
 def allocate_kitti_dataset(data_root: Path) -> Dict[str, object]:
