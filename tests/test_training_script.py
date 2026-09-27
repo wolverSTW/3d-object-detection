@@ -3,6 +3,8 @@ import subprocess
 import sys
 import unittest
 
+import torch
+
 from tools.download.create_mock_kitti import create_mock_kitti
 
 
@@ -45,6 +47,20 @@ class TestTrainingScript(unittest.TestCase):
         loss_bright = trainer._compute_batch_loss({'image': bright, 'annotations': [], 'calib': {}})
 
         self.assertNotAlmostEqual(loss_dark, loss_bright, places=6)
+
+    def test_build_dataloader_uses_batch_and_worker_settings(self):
+        from scripts.train import build_dataloader
+
+        dataloader = build_dataloader('data/KITTI/raw', 'train.txt', limit=4, batch_size=2, num_workers=0)
+
+        self.assertTrue(hasattr(dataloader, '__iter__'))
+        self.assertEqual(dataloader.batch_size, 2)
+        self.assertEqual(dataloader.num_workers, 0)
+
+        batch = next(iter(dataloader))
+        self.assertIn('image', batch)
+        self.assertTrue(torch.is_tensor(batch['image']))
+        self.assertEqual(batch['image'].shape[0], 2)
 
 
 if __name__ == '__main__':

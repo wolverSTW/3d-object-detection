@@ -29,37 +29,57 @@ class Trainer:
         if not isinstance(batch, dict):
             return {
                 'cls_target': torch.tensor([0], dtype=torch.long),
-                'box_target': torch.zeros(4, dtype=torch.float32),
-                'dim_target': torch.tensor([1.5, 1.6, 3.8], dtype=torch.float32),
-                'depth_target': torch.tensor([8.0], dtype=torch.float32),
-                'location_target': torch.tensor([0.0, 0.0, 8.0], dtype=torch.float32),
-                'orientation_target': torch.tensor([0.0], dtype=torch.float32),
+                'box_target': torch.zeros(1, 4, dtype=torch.float32),
+                'dim_target': torch.tensor([[1.5, 1.6, 3.8]], dtype=torch.float32),
+                'depth_target': torch.tensor([[8.0]], dtype=torch.float32),
+                'location_target': torch.tensor([[0.0, 0.0, 8.0]], dtype=torch.float32),
+                'orientation_target': torch.tensor([[0.0]], dtype=torch.float32),
             }
 
         annotations = batch.get('annotations', [])
+        if isinstance(annotations, dict):
+            annotations = [annotations]
         if not annotations:
+            batch_size = 1
+            image = batch.get('image')
+            if isinstance(image, torch.Tensor):
+                batch_size = max(1, image.shape[0]) if image.dim() > 3 else 1
             return {
-                'cls_target': torch.tensor([0], dtype=torch.long),
-                'box_target': torch.zeros(4, dtype=torch.float32),
-                'dim_target': torch.tensor([1.5, 1.6, 3.8], dtype=torch.float32),
-                'depth_target': torch.tensor([8.0], dtype=torch.float32),
-                'location_target': torch.tensor([0.0, 0.0, 8.0], dtype=torch.float32),
-                'orientation_target': torch.tensor([0.0], dtype=torch.float32),
+                'cls_target': torch.zeros(batch_size, dtype=torch.long),
+                'box_target': torch.zeros(batch_size, 4, dtype=torch.float32),
+                'dim_target': torch.full((batch_size, 3), 1.5, dtype=torch.float32),
+                'depth_target': torch.full((batch_size, 1), 8.0, dtype=torch.float32),
+                'location_target': torch.full((batch_size, 3), 0.0, dtype=torch.float32),
+                'orientation_target': torch.zeros(batch_size, 1, dtype=torch.float32),
             }
 
-        ann = annotations[0]
-        loc = ann.get('location_3d', [0.0, 0.0, 8.0])
-        dims = ann.get('dimensions_3d', [1.5, 1.6, 3.8])
-        bbox = ann.get('bbox_2d', [0.0, 0.0, 10.0, 10.0])
-        rot = ann.get('rotation_y', 0.0)
+        batch_size = len(annotations)
+        box_targets = []
+        dim_targets = []
+        depth_targets = []
+        location_targets = []
+        orientation_targets = []
+
+        for ann in annotations:
+            if not isinstance(ann, dict):
+                ann = {}
+            loc = ann.get('location_3d', [0.0, 0.0, 8.0])
+            dims = ann.get('dimensions_3d', [1.5, 1.6, 3.8])
+            bbox = ann.get('bbox_2d', [0.0, 0.0, 10.0, 10.0])
+            rot = ann.get('rotation_y', 0.0)
+            box_targets.append([float(bbox[0]), float(bbox[1]), float(bbox[2]), float(bbox[3])])
+            dim_targets.append([float(d) for d in dims])
+            depth_targets.append([float(loc[2])])
+            location_targets.append([float(v) for v in loc])
+            orientation_targets.append([float(rot)])
 
         return {
-            'cls_target': torch.tensor([0], dtype=torch.long),
-            'box_target': torch.tensor([float(bbox[0]), float(bbox[1]), float(bbox[2]), float(bbox[3])], dtype=torch.float32),
-            'dim_target': torch.tensor([float(d) for d in dims], dtype=torch.float32),
-            'depth_target': torch.tensor([float(loc[2])], dtype=torch.float32),
-            'location_target': torch.tensor([float(v) for v in loc], dtype=torch.float32),
-            'orientation_target': torch.tensor([float(rot)], dtype=torch.float32),
+            'cls_target': torch.zeros(batch_size, dtype=torch.long),
+            'box_target': torch.tensor(box_targets, dtype=torch.float32),
+            'dim_target': torch.tensor(dim_targets, dtype=torch.float32),
+            'depth_target': torch.tensor(depth_targets, dtype=torch.float32),
+            'location_target': torch.tensor(location_targets, dtype=torch.float32),
+            'orientation_target': torch.tensor(orientation_targets, dtype=torch.float32),
         }
 
     def _compute_batch_loss(self, batch):
