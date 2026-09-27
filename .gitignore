@@ -9,9 +9,15 @@ env/
 # Datasets & Heavy Outputs (Do NOT push to Git)
 data/KITTI/raw/*.zip
 data/KITTI/raw/image_2/
-data/KITTI/raw/velodyne/
+data/KITTI/raw/calib/
+data/KITTI/raw/label_2/
+data/KITTI/splits/*.txt
+data/KITTI/.pipeline_state.json
+experiments/*.pt
+experiments/**/*.pt
 experiments/*/checkpoints/
 experiments/*/logs/
+experiments/**/metrics/
 outputs/
 
 # IDE & System

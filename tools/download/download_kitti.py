@@ -9,7 +9,6 @@ KITTI_URLS = {
     "images": "https://s3.eu-central-1.amazonaws.com/avg-kitti/data_object_image_2.zip",
     "labels": "https://s3.eu-central-1.amazonaws.com/avg-kitti/data_object_label_2.zip",
     "calib": "https://s3.eu-central-1.amazonaws.com/avg-kitti/data_object_calib.zip",
-    "velodyne": "https://s3.eu-central-1.amazonaws.com/avg-kitti/data_object_velodyne.zip"
 }
 
 TARGET_DIR = "data/KITTI/raw"

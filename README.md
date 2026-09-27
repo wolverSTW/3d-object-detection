@@ -1,285 +1,183 @@
-# Lightweight YOLOv10-Based Geometry-Guided Framework for Monocular 3D Object Detection and Distance Estimation
+# Lightweight Geometry-Guided Monocular 3D Detection
 
-This repository implements a lightweight, thesis-ready framework for monocular 3D object detection and distance estimation on the KITTI dataset. It combines a YOLOv10-inspired baseline with a geometry-guided extension to improve 3D localization and depth-aware reasoning from a single image. The project includes dataset preparation, model experimentation, training utilities, evaluation metrics, efficiency analysis, and experiment comparison in a reproducible research workflow.
-
-## Project Snapshot
-
-- Research focus: monocular 3D object detection and depth/distance estimation
-- Dataset: KITTI benchmark data with lightweight mock-data support for local validation
-- Method: YOLOv10-inspired baseline with geometry-guided refinement modules
-- Outputs: training pipeline, evaluation metrics, ablation comparison reports, and experiment summaries
-
-## Project Goals
-
-- Reproduce a lightweight YOLOv10-based baseline for monocular 3D object detection.
-- Extend the baseline with geometry-guided feature refinement.
-- Evaluate 3D detection metrics (AP3D / APBEV) and distance estimation metrics.
-- Compare baseline and proposed models under ablation settings.
-- Provide a clean, reproducible research project structure for the thesis workflow.
-
-## Repository Structure
-
-```text
-3d-object-detection/
-├── configs/
-│   ├── dataset/
-│   ├── models/
-│   └── experiments/
-├── notebooks/
-├── src/
-│   ├── data/
-│   ├── models/
-│   ├── losses/
-│   ├── training/
-│   ├── evaluation/
-│   ├── visualization/
-│   └── utils/
-├── scripts/
-├── tools/
-├── tests/
-├── docs/
-├── experiments/
-├── outputs/
-├── data/
-├── README.md
-├── requirements.txt
-├── train.py
-├── .env.example
-└── .gitignore
-```
-
-## Quick Start
-
-1. Create a virtual environment and install dependencies:
+Quick start:
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-2. Generate mock KITTI data for local validation:
-
-```bash
-python tools/download/create_mock_kitti.py
-```
-
-3. Run the project entry point:
-
-```bash
-python train.py --config configs/experiments/baseline.yaml
-```
-
-4. Run the training script directly:
-
-```bash
-python scripts/train.py --config configs/experiments/baseline.yaml --model baseline --epochs 1
-```
-
-5. Evaluate results:
-
-```bash
-python scripts/evaluate.py --config configs/experiments/baseline.yaml
-```
-
-6. Run the test suite:
-
-```bash
-python -m unittest discover -s tests -v
-```
-
-## Data Pipeline
-
-The project is designed around the KITTI dataset workflow:
-
-- dataset acquisition and integrity validation
-- advanced exploratory data analysis
-- preprocessing and target generation
-- baseline YOLOv10-style 3D detection
-- geometry-guided model extension
-- training, validation, and benchmarking
-
-## Thesis Experiment Themes
-
-### Baseline Model
-- YOLOv10 backbone/necks
-- 3D detection head
-- standard monocular 3D outputs
-
-### Proposed Geometry-Guided Model
-- YOLOv10 features enhanced with geometry priors and guidance modules
-- camera geometry-aware representation learning
-- improved 3D localization and distance prediction
-
-### Ablation Study
-- baseline only
-- geometry guidance enabled
-- CSAMM / geometry feature module enabled
-- full model with all geometry components
-
-### Evaluation Dimensions
-- AP3D Easy / Moderate / Hard
-- APBEV Easy / Moderate / Hard
-- distance MAE / RMSE
-- model efficiency metrics (params, GFLOPs, inference time, FPS)
-
-## Running on a vast.ai GPU Server
-
-### Quick Start
-
-```bash
-ssh root@<INSTANCE_IP>
-git clone <your-repo-url> /workspace/3d-object-detection
-cd /workspace/3d-object-detection
+cd /workspaces/3d-object-detection
 python3 -m venv .venv
 source .venv/bin/activate
-pip install --upgrade pip
 pip install -r requirements.txt
-chmod +x tools/run_vastai_kitti_train.sh
-
-# Baseline model
-MODEL=baseline EPOCHS=50 DATA_DIR=data/KITTI/raw SPLIT=train.txt ./tools/run_vastai_kitti_train.sh
-
-# Proposed geometry-guided model
-MODEL=geometry EPOCHS=50 DATA_DIR=data/KITTI/raw SPLIT=train.txt ./tools/run_vastai_kitti_train.sh
+python run_training.py
 ```
 
-### Required dataset layout
+This project is a beginner-friendly training and evaluation pipeline for monocular 3D object detection on the KITTI dataset. It includes a baseline model, a geometry-guided variant, dataset validation, training, evaluation, and experiment comparison.
 
-The project expects the following structure before training begins:
+## What this project does
+
+- Prepares the official KITTI dataset for training
+- Validates that the expected KITTI folders are present
+- Builds a training split from the image files
+- Trains a baseline model and a geometry-guided model
+- Evaluates detection performance and distance metrics
+- Compares model results for experiments
+
+## 1. Install the project
+
+From the repo root:
+
+```bash
+cd /workspaces/3d-object-detection
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+## 2. Run the project
+
+Use the project launcher:
+
+```bash
+python run_training.py
+```
+
+This performs the full KITTI preparation and starts the correct training path for the current environment.
+
+## 3. Prepare the KITTI dataset
+
+Run the dataset workflow:
+
+```bash
+python scripts/kitti_pipeline.py
+```
+
+What this does:
+
+- downloads the official KITTI archive files if they are missing
+- extracts them once
+- makes sure the expected dataset layout is ready
+- creates the split file for training
+- runs a short dataset summary
+
+This is the safe setup flow for real KITTI data. It skips steps that are already complete.
+
+## 4. Dataset layout
+
+The official KITTI download usually creates a structure like this:
 
 ```text
-data/KITTI/
-├── raw/
+data/KITTI/raw/
+├── training/
 │   ├── image_2/
 │   ├── label_2/
-│   ├── calib/
-│   └── ...
-├── splits/
-│   └── train.txt
+│   └── calib/
+├── testing/
+│   └── image_2/
+├── data_object_image_2.zip
+├── data_object_label_2.zip
+└── data_object_calib.zip
 ```
 
-If you see the message `KITTI dataset not found at data/KITTI/raw`, the real issue is that the full KITTI directory is not present on the GPU server yet. Upload or unzip the official KITTI dataset into `data/KITTI/raw/` and create the split file before running training.
+The project resolves both the official extracted structure and the flattened raw layout automatically.
 
-Example:
+## 5. Train the model
+
+Use the launcher for the main training flow:
 
 ```bash
-mkdir -p data/KITTI/splits
-ls data/KITTI/raw/image_2 | sed 's/\.png$//' > data/KITTI/splits/train.txt
+python run_training.py
 ```
 
-If you are only validating locally, you can generate mock data with:
-
-```bash
-python tools/download/create_mock_kitti.py
-```
-
-### Detailed setup steps
-
-1. Launch a GPU instance on vast.ai.
-   - Choose a Linux image with Python and CUDA support.
-   - Recommended: Ubuntu 22.04 or 24.04 with a CUDA-enabled GPU.
-   - Save the provided SSH command and your instance IP.
-
-2. Connect to the server:
-
-```bash
-ssh root@<INSTANCE_IP>
-```
-
-3. Install the required system packages:
-
-```bash
-apt update && apt install -y git python3 python3-pip python3-venv tmux
-```
-
-4. Clone the repository and enter it:
-
-```bash
-git clone <your-repo-url> /workspace/3d-object-detection
-cd /workspace/3d-object-detection
-```
-
-5. Create a virtual environment and install Python dependencies:
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-6. Start a long-running training session in the background with `tmux` using the included launcher:
-
-```bash
-chmod +x tools/run_vastai_kitti_train.sh
-
-tmux new -s thesis-train
-source .venv/bin/activate
-cd /workspace/3d-object-detection
-
-# Baseline model:
-MODEL=baseline EPOCHS=50 DATA_DIR=data/KITTI/raw SPLIT=train.txt ./tools/run_vastai_kitti_train.sh
-
-# Proposed model:
-MODEL=geometry EPOCHS=50 DATA_DIR=data/KITTI/raw SPLIT=train.txt ./tools/run_vastai_kitti_train.sh
-```
-
-To detach from the session:
-
-```bash
-tmux detach
-```
-
-To reconnect later:
-
-```bash
-tmux attach -t thesis-train
-```
-
-You can also run the training script directly without the wrapper:
+For direct training commands, use:
 
 ```bash
 python scripts/train.py \
   --config configs/experiments/baseline.yaml \
   --model baseline \
+  --epochs 100 \
   --data-dir data/KITTI/raw \
-  --split train.txt \
-  --epochs 50
+  --split train.txt
 ```
 
-7. Inspect the training outputs after the run:
+For the geometry model:
 
 ```bash
-ls -R experiments
-ls -R experiments/logs
-
-tail -f experiments/logs/baseline_kitti_train.log
-# or
-# tail -f experiments/logs/geometry_kitti_train.log
+python scripts/train.py \
+  --config configs/experiments/geometry.yaml \
+  --model geometry \
+  --epochs 100 \
+  --data-dir data/KITTI/raw \
+  --split train.txt
 ```
 
-8. Run the comparison workflow after training:
+## 6. Evaluate the models
+
+```bash
+python scripts/evaluate.py --config configs/experiments/baseline.yaml
+python scripts/evaluate.py --config configs/experiments/geometry.yaml
+```
+
+## 7. Compare experiment results
 
 ```bash
 python scripts/run_experiments.py --output-dir experiments/final_compare
+python scripts/compare_experiments.py --output-dir experiments/final_compare
 ```
 
-9. Check the generated reports and metrics:
+## 8. Optional: run tests
 
 ```bash
-ls -R experiments
+python -m unittest discover -s tests -v
 ```
 
-10. Copy results back to your local machine if needed:
+## Common issue to avoid
+
+If the dataset is missing, you will see errors like:
+
+- `No training samples found ...`
+- `image_2: MISSING`
+- `label_2: MISSING`
+- `calib: MISSING`
+
+This usually means the official KITTI ZIP has not been downloaded or extracted correctly. In that case, run:
 
 ```bash
-scp -r root@<INSTANCE_IP>:/workspace/3d-object-detection/experiments ./
+python scripts/kitti_pipeline.py
 ```
 
-## Notes
+and then rerun training.
 
-This scaffold is intentionally organized to support the full thesis pipeline while remaining lightweight and easy to extend. The implementation can be upgraded from these templates into a full training pipeline as the research progresses.
+## Project structure
+
+```text
+3d-object-detection/
+├── configs/
+├── data/
+├── docs/
+├── experiments/
+├── notebooks/
+├── outputs/
+├── scripts/
+├── src/
+├── tests/
+├── tools/
+├── README.md
+├── requirements.txt
+├── train.py
+└── .gitignore
+```
+
+## Summary
+
+The normal workflow is:
+
+1. install dependencies
+2. run `python run_training.py`
+3. prepare the KITTI dataset if needed
+4. train with the project launcher or direct training command
+5. evaluate and compare results
+
+This keeps the project simple and avoids duplicate setup instructions.
 
 ## License
 
