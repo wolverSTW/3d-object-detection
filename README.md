@@ -33,7 +33,79 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-## 2. Run the project
+## 2. GPU Sever Setup
+
+Use this flow when setting up the project on a GPU server or a remote Linux machine.
+
+### Clone or update the repository
+
+If the project is not already available:
+
+```bash
+git clone https://github.com/wolverSTW/3d-object-detection.git
+cd 3d-object-detection
+```
+
+If the project is already cloned on the server:
+
+```bash
+cd /workspaces/3d-object-detection
+git pull origin main
+```
+
+### Create the virtual environment and install dependencies
+
+```bash
+cd /workspaces/3d-object-detection
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+### Check GPU availability
+
+```bash
+python -c "import torch; print('CUDA available:', torch.cuda.is_available()); print('Device count:', torch.cuda.device_count())"
+```
+
+If you see `CUDA available: True`, the project is ready to train on the GPU.
+
+### Prepare KITTI dataset
+
+```bash
+python scripts/kitti_pipeline.py
+```
+
+This downloads or validates the KITTI archive, extracts the files, and creates the required dataset split.
+
+### Start training on the GPU server
+
+Recommended command for the thesis model:
+
+```bash
+python scripts/train.py --model proposed --epochs 100 --data-dir data/KITTI/raw --split train.txt
+```
+
+Baseline model:
+
+```bash
+python scripts/train.py --model baseline --epochs 100 --data-dir data/KITTI/raw --split train.txt
+```
+
+To run in the background and keep the output in a log file:
+
+```bash
+nohup python scripts/train.py --model proposed --epochs 100 --data-dir data/KITTI/raw --split train.txt > outputs/training.log 2>&1 &
+```
+
+Monitor training:
+
+```bash
+tail -f outputs/training.log
+```
+
+## 3. Run the project
 
 Use the project launcher:
 
@@ -43,7 +115,7 @@ python run_training.py
 
 This performs the full KITTI preparation and starts the correct training path for the current environment.
 
-## 3. Prepare the KITTI dataset
+## 4. Prepare the KITTI dataset
 
 Run the dataset workflow:
 
@@ -61,7 +133,7 @@ What this does:
 
 This is the safe setup flow for real KITTI data. It skips steps that are already complete.
 
-## 4. Dataset layout
+## 5. Dataset layout
 
 The official KITTI download usually creates a structure like this:
 
@@ -80,7 +152,7 @@ data/KITTI/raw/
 
 The project resolves both the official extracted structure and the flattened raw layout automatically.
 
-## 5. Train the model
+## 6. Train the model
 
 Use the launcher for the main training flow:
 
@@ -110,21 +182,21 @@ python scripts/train.py \
   --split train.txt
 ```
 
-## 6. Evaluate the models
+## 7. Evaluate the models
 
 ```bash
 python scripts/evaluate.py --config configs/experiments/baseline.yaml
 python scripts/evaluate.py --config configs/experiments/geometry.yaml
 ```
 
-## 7. Compare experiment results
+## 8. Compare experiment results
 
 ```bash
 python scripts/run_experiments.py --output-dir experiments/final_compare
 python scripts/compare_experiments.py --output-dir experiments/final_compare
 ```
 
-## 8. Optional: run tests
+## 9. Optional: run tests
 
 ```bash
 python -m unittest discover -s tests -v
